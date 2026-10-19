@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Remache_Sem1.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Remache_Sem1"
+    xmlns:views="clr-namespace:Remache_Sem1.Views"
+    Title="Remache_Sem1">
+
+    <ShellContent
+        Title="Inicio"
+        ContentTemplate="{DataTemplate views:v_inicio}"
+        Route="v_inicio" />
+
+</Shell>
