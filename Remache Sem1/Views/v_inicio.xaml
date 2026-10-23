@@ -2,54 +2,262 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Remache_Sem1.Views.v_inicio"
-             Title="Cálculo del Aporte al IESS">
+             BackgroundColor="White"
+             Title="Inscripción">
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="18" Padding="28">
+	<ContentPage.Resources>
+		<ResourceDictionary>
 
-            <!-- Título Principal -->
-            <Label Text="Cálculo de Aporte IESS"
-                   FontSize="28"
+			<!-- Caja visual que envuelve cada campo (Entry / Picker) -->
+			<Style x:Key="Campo" TargetType="Border">
+				<Setter Property="Stroke" Value="#BBBBBB" />
+				<Setter Property="StrokeThickness" Value="1" />
+				<Setter Property="StrokeShape" Value="RoundRectangle 6" />
+				<Setter Property="BackgroundColor" Value="White" />
+				<Setter Property="Padding" Value="10,0" />
+				<Setter Property="HeightRequest" Value="44" />
+				<Setter Property="VerticalOptions" Value="Center" />
+			</Style>
+
+			<!-- Etiqueta de cada fila -->
+			<Style x:Key="EtiquetaCampo" TargetType="Label">
+				<Setter Property="VerticalOptions" Value="Center" />
+				<Setter Property="FontAttributes" Value="Bold" />
+				<Setter Property="TextColor" Value="#333333" />
+				<Setter Property="LineBreakMode" Value="NoWrap" />
+			</Style>
+
+			<!-- Título que "corta" el borde de cada sección -->
+			<Style x:Key="TituloSeccion" TargetType="Label">
+				<Setter Property="TextColor" Value="#555555" />
+				<Setter Property="FontSize" Value="13" />
+				<Setter Property="FontAttributes" Value="Bold" />
+				<Setter Property="BackgroundColor" Value="White" />
+				<Setter Property="Padding" Value="6,0" />
+				<Setter Property="Margin" Value="14,0,0,0" />
+				<Setter Property="HorizontalOptions" Value="Start" />
+				<Setter Property="VerticalOptions" Value="Start" />
+			</Style>
+
+			<!-- Estilos implícitos para Entry y Picker -->
+			<Style TargetType="Entry">
+				<Setter Property="TextColor" Value="Black" />
+				<Setter Property="PlaceholderColor" Value="#777777" />
+				<Setter Property="BackgroundColor" Value="Transparent" />
+				<Setter Property="VerticalOptions" Value="Center" />
+				<Setter Property="FontSize" Value="14" />
+			</Style>
+
+			<Style TargetType="Picker">
+				<Setter Property="TextColor" Value="Black" />
+				<Setter Property="TitleColor" Value="#777777" />
+				<Setter Property="BackgroundColor" Value="Transparent" />
+				<Setter Property="VerticalOptions" Value="Center" />
+				<Setter Property="FontSize" Value="14" />
+			</Style>
+
+		</ResourceDictionary>
+	</ContentPage.Resources>
+
+	<ScrollView BackgroundColor="White">
+		<VerticalStackLayout Padding="30" Spacing="20" MaximumWidthRequest="1000" HorizontalOptions="Center">
+
+			<!-- Encabezado Principal -->
+			<Label Text="FASE A - GRADO"
+                   FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="#6D28D9" />
+                   TextColor="#0A3A6B" />
 
-            <!-- Campo Nombre -->
-            <Label Text="Nombre:" FontAttributes="Bold" />
-            <Entry x:Name="txtNombre"
-                   Placeholder="Ingrese su nombre"
-                   HorizontalOptions="Fill" />
+			<Label Text="Formulario de registro"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   TextColor="#333333" />
 
-            <!-- Campo Apellido -->
-            <Label Text="Apellido:" FontAttributes="Bold" />
-            <Entry x:Name="txtApellido"
-                   Placeholder="Ingrese su apellido"
-                   HorizontalOptions="Fill" />
+			<Label Text="Complete la siguiente información para realizar su inscripción."
+                   FontSize="12"
+                   HorizontalOptions="Center"
+                   TextColor="#666666"
+                   Margin="0,-15,0,10" />
 
-            <!-- Campo Edad -->
-            <Label Text="Edad:" FontAttributes="Bold" />
-            <Entry x:Name="txtEdad"
-                   Placeholder="Ingrese su edad"
-                   Keyboard="Numeric"
-                   HorizontalOptions="Fill" />
+			<!-- Contenido Principal -->
+			<Grid ColumnDefinitions="*, 250" ColumnSpacing="20">
 
-            <!-- Campo Salario -->
-            <Label Text="Salario ($):" FontAttributes="Bold" />
-            <Entry x:Name="txtSalario"
-                   Placeholder="Ej. 500.00"
-                   Keyboard="Numeric"
-                   HorizontalOptions="Fill" />
+				<!-- Columna Izquierda: Formulario -->
+				<VerticalStackLayout Grid.Column="0" Spacing="20">
 
-            <!-- Botón de Cálculo -->
-            <Button Text="Calcular Aporte"
-                    Clicked="OnCalcularClicked"
-                    Margin="0,18,0,0"
-                    BackgroundColor="#7C3AED"
+					<!-- ===== Datos Personales ===== -->
+					<Grid>
+						<Border Stroke="#CCCCCC" StrokeThickness="1" Padding="15,28,15,15"
+                                Margin="0,10,0,0" BackgroundColor="White">
+							<VerticalStackLayout Spacing="14">
+
+								<!-- Identificación -->
+								<Grid ColumnDefinitions="160, 140, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Identificación:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Picker x:Name="pckTipoId" Title="Tipo" SelectedIndex="0">
+											<Picker.ItemsSource>
+												<x:Array Type="{x:Type x:String}">
+													<x:String>CÉDULA</x:String>
+													<x:String>PASAPORTE</x:String>
+												</x:Array>
+											</Picker.ItemsSource>
+										</Picker>
+									</Border>
+									<Border Grid.Column="2" Style="{StaticResource Campo}">
+										<Entry x:Name="txtNumeroId" Placeholder="Número" Keyboard="Numeric" />
+									</Border>
+								</Grid>
+
+								<!-- Apellidos -->
+								<Grid ColumnDefinitions="160, *, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Apellidos:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Entry x:Name="txtApellidoPaterno" Placeholder="Paterno" />
+									</Border>
+									<Border Grid.Column="2" Style="{StaticResource Campo}">
+										<Entry x:Name="txtApellidoMaterno" Placeholder="Materno" />
+									</Border>
+								</Grid>
+
+								<!-- Nombres completos -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Nombres completos:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Entry x:Name="txtNombres" Placeholder="Nombres completos" />
+									</Border>
+								</Grid>
+
+								<!-- Teléfono personal -->
+								<Grid ColumnDefinitions="160, 220, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Teléfono personal:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Entry x:Name="txtTelefono" Placeholder="0991234567" Keyboard="Numeric" MaxLength="10" />
+									</Border>
+								</Grid>
+
+								<!-- Correo personal -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Correo personal:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Entry x:Name="txtCorreo" Placeholder="ejemplo@sudamericano.edu.ec" Keyboard="Email" />
+									</Border>
+								</Grid>
+
+								<!-- Confirmar correo -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Confirmar correo:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Entry x:Name="txtConfirmarCorreo" Placeholder="Confirme su correo" Keyboard="Email" />
+									</Border>
+								</Grid>
+
+							</VerticalStackLayout>
+						</Border>
+
+						<!-- Título superpuesto sobre el borde (ya no se recorta) -->
+						<Label Text="Datos Personales" Style="{StaticResource TituloSeccion}" />
+					</Grid>
+
+					<!-- ===== Información Académica ===== -->
+					<Grid>
+						<Border Stroke="#CCCCCC" StrokeThickness="1" Padding="15,28,15,15"
+                                Margin="0,10,0,0" BackgroundColor="White">
+							<VerticalStackLayout Spacing="14">
+
+								<!-- Carrera -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Carrera:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Picker x:Name="pckCarrera" Title="Seleccione una carrera">
+											<Picker.ItemsSource>
+												<x:Array Type="{x:Type x:String}">
+													<x:String>Desarrollo de Software</x:String>
+													<x:String>Diseño Gráfico</x:String>
+													<x:String>Administración</x:String>
+												</x:Array>
+											</Picker.ItemsSource>
+										</Picker>
+									</Border>
+								</Grid>
+
+								<!-- Modalidad -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Modalidad:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Picker x:Name="pckModalidad" Title="Seleccione una modalidad">
+											<Picker.ItemsSource>
+												<x:Array Type="{x:Type x:String}">
+													<x:String>Presencial</x:String>
+													<x:String>En Línea</x:String>
+													<x:String>Híbrida</x:String>
+												</x:Array>
+											</Picker.ItemsSource>
+										</Picker>
+									</Border>
+								</Grid>
+
+								<!-- Campus -->
+								<Grid ColumnDefinitions="160, *" ColumnSpacing="8" RowDefinitions="44">
+									<Label Grid.Column="0" Text="Campus:" Style="{StaticResource EtiquetaCampo}" />
+									<Border Grid.Column="1" Style="{StaticResource Campo}">
+										<Picker x:Name="pckCampus" Title="Seleccione un campus">
+											<Picker.ItemsSource>
+												<x:Array Type="{x:Type x:String}">
+													<x:String>Matriz Cuenca</x:String>
+												</x:Array>
+											</Picker.ItemsSource>
+										</Picker>
+									</Border>
+								</Grid>
+
+							</VerticalStackLayout>
+						</Border>
+
+						<Label Text="Información Académica" Style="{StaticResource TituloSeccion}" />
+					</Grid>
+
+				</VerticalStackLayout>
+
+				<!-- Columna Derecha: Tarjetas de Información -->
+				<VerticalStackLayout Grid.Column="1" Spacing="15" Margin="0,10,0,0">
+
+					<!-- Tarjeta Azul de Información -->
+					<Border BackgroundColor="#0083A0" StrokeShape="Rectangle" Padding="15">
+						<VerticalStackLayout Spacing="12">
+							<Label Text="Información" TextColor="White" FontAttributes="Bold" FontSize="14" />
+							<Label Text="📞 099 648 3605" TextColor="White" FontSize="12" />
+							<Label Text="☎️ 02 255 5741 - Ext: 101/102" TextColor="White" FontSize="12" />
+							<Label Text="✉️ its@sudamericano.edu.ec" TextColor="White" FontSize="11" />
+						</VerticalStackLayout>
+					</Border>
+
+					<!-- Tarjeta de Enlaces -->
+					<Border Stroke="#0083A0" StrokeThickness="1.5" BackgroundColor="White" Padding="15">
+						<VerticalStackLayout Spacing="8">
+							<Label Text="Enlaces" TextColor="#333333" FontAttributes="Bold" FontSize="14" />
+							<Label Text="&gt;&gt; Preguntas Frecuentes" TextColor="#555555" FontSize="12" Margin="0,5,0,0" />
+							<Label Text="&gt;&gt; Calendario Académico" TextColor="#555555" FontSize="12" />
+						</VerticalStackLayout>
+					</Border>
+
+				</VerticalStackLayout>
+			</Grid>
+
+			<!-- Botón Enviar -->
+			<Button Text="Enviar Inscripción"
+                    Clicked="OnValidarYGuardarClicked"
+                    BackgroundColor="#0A3A6B"
                     TextColor="White"
-                    CornerRadius="12"
-                    HorizontalOptions="Fill" />
+                    CornerRadius="6"
+                    HeightRequest="46"
+                    WidthRequest="240"
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,0" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+			<Label x:Name="lblEstado" TextColor="Green" FontSize="12" HorizontalOptions="Center" />
 
+		</VerticalStackLayout>
+	</ScrollView>
 </ContentPage>

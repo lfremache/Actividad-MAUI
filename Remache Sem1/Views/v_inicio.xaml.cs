@@ -1,55 +1,93 @@
-using System;
-using Microsoft.Maui.Controls;
+using System.Text.RegularExpressions;
 
-namespace Remache_Sem1.Views
+namespace Remache_Sem1.Views;
+
+public partial class v_inicio : ContentPage
 {
-    public partial class v_inicio : ContentPage
+    public v_inicio()
     {
-        public v_inicio()
+        InitializeComponent();
+    }
+
+    private async void OnValidarYGuardarClicked(object sender, EventArgs e)
+    {
+        string numeroId = txtNumeroId.Text?.Trim() ?? "";
+        string paterno = txtApellidoPaterno.Text?.Trim() ?? "";
+        string materno = txtApellidoMaterno.Text?.Trim() ?? "";
+        string nombres = txtNombres.Text?.Trim() ?? "";
+        string telefono = txtTelefono.Text?.Trim() ?? "";
+        string correo = txtCorreo.Text?.Trim() ?? "";
+        string confirmarCorreo = txtConfirmarCorreo.Text?.Trim() ?? "";
+
+        // Verificación de campos obligatorios
+        if (string.IsNullOrWhiteSpace(numeroId) || string.IsNullOrWhiteSpace(paterno) ||
+            string.IsNullOrWhiteSpace(nombres) || string.IsNullOrWhiteSpace(correo) ||
+            string.IsNullOrWhiteSpace(confirmarCorreo))
         {
-            InitializeComponent();
+            await DisplayAlert("Atención", "Por favor llene los campos requeridos del formulario.", "OK");
+            return;
         }
 
-        private async void OnCalcularClicked(object sender, EventArgs e)
+        // VALIDACIÓN 1: Solo Números (Cédula y Teléfono)
+        if (!Regex.IsMatch(numeroId, @"^[0-9]+$"))
         {
-            // 1. Obtener los valores de los Entry
-            string nombre = txtNombre.Text?.Trim();
-            string apellido = txtApellido.Text?.Trim();
-            string edadStr = txtEdad.Text?.Trim();
-            string salarioStr = txtSalario.Text?.Trim();
+            await DisplayAlert("Error", "La identificación debe contener solo números.", "OK");
+            return;
+        }
 
-            // 2. Validación obligatoria: Campos vacíos
-            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(apellido) ||
-                string.IsNullOrEmpty(edadStr) || string.IsNullOrEmpty(salarioStr))
-            {
-                await DisplayAlert("Error", "Por favor, complete todos los campos de información.", "OK");
-                return;
-            }
+        if (!string.IsNullOrEmpty(telefono) && !Regex.IsMatch(telefono, @"^[0-9]+$"))
+        {
+            await DisplayAlert("Error", "El teléfono debe contener solo números.", "OK");
+            return;
+        }
 
-            // 3. Validación obligatoria: Edad válida
-            if (!int.TryParse(edadStr, out int edad) || edad <= 0)
-            {
-                await DisplayAlert("Error de Formato", "Ingrese una edad numérica válida.", "OK");
-                return;
-            }
+        // VALIDACIÓN 2: Solo Letras (Nombres y Apellidos)
+        string textoNombresCompleto = $"{paterno} {materno} {nombres}";
+        if (!Regex.IsMatch(textoNombresCompleto, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        {
+            await DisplayAlert("Error", "Los nombres y apellidos deben contener únicamente letras.", "OK");
+            return;
+        }
 
-            // 4. Validación obligatoria: Salario válido
-            if (!decimal.TryParse(salarioStr, out decimal salario) || salario <= 0)
-            {
-                await DisplayAlert("Error de Formato", "Ingrese un salario numérico válido.", "OK");
-                return;
-            }
+        // VALIDACIÓN 3: Coincidir los correos
+        if (!correo.Equals(confirmarCorreo, StringComparison.OrdinalIgnoreCase))
+        {
+            await DisplayAlert("Error", "Los correos electrónicos ingresados no coinciden.", "OK");
+            return;
+        }
 
-            // 5. Cálculo del Aporte al IESS (9.45%)
-            decimal aporte = salario * 0.0945m;
+        // VALIDACIÓN 4: Enviar todo a un archivo TXT
+        try
+        {
+            string carrera = pckCarrera.SelectedItem?.ToString() ?? "No seleccionada";
+            string modalidad = pckModalidad.SelectedItem?.ToString() ?? "No seleccionada";
+            string campus = pckCampus.SelectedItem?.ToString() ?? "No seleccionado";
 
-            // 6. Formato de la alerta con saltos de línea (\n)
-            string mensaje = $"Bienvenido \"{nombre} {apellido}\"\n" +
-                             $"Tienes \"{edad}\" años\n" +
-                             $"Tu aporte mensual es \"${aporte:F2}\"";
+            string contenidoTxt = $"========================================\n" +
+                                 $"      REGISTRO DE INSCRIPCIÓN           \n" +
+                                 $"========================================\n" +
+                                 $"Fecha: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\n\n" +
+                                 $"[DATOS PERSONALES]\n" +
+                                 $"Identificación ({pckTipoId.SelectedItem ?? "CÉDULA"}): {numeroId}\n" +
+                                 $"Apellidos: {paterno} {materno}\n" +
+                                 $"Nombres: {nombres}\n" +
+                                 $"Teléfono: {telefono}\n" +
+                                 $"Correo Confirmado: {correo}\n\n" +
+                                 $"[INFORMACIÓN ACADÉMICA]\n" +
+                                 $"Carrera: {carrera}\n" +
+                                 $"Modalidad: {modalidad}\n" +
+                                 $"Campus: {campus}\n" +
+                                 $"========================================\n";
 
-            // 7. Mostrar la alerta requerida
-            await DisplayAlert("Resultado del Cálculo", mensaje, "Aceptar");
+            string ruta = Path.Combine(FileSystem.AppDataDirectory, "Inscripcion_Registro.txt");
+            await File.WriteAllTextAsync(ruta, contenidoTxt);
+
+            lblEstado.Text = $"✓ Archivo TXT generado en: {ruta}";
+            await DisplayAlert("Éxito", "Inscripción registrada correctamente y guardada en el archivo TXT.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo crear el archivo TXT: {ex.Message}", "OK");
         }
     }
 }
